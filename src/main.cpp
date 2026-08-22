@@ -2,7 +2,6 @@
 #include <freertos/task.h>
 #include <driver/gpio.h>
 #include <stdio.h>
-#include "panel.h"
 #include "uix.hpp"
 #include "ttgo.hpp"
 #define OPENSANS_REGULAR_IMPLEMENTATION
