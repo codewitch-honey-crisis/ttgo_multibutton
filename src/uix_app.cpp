@@ -1,9 +1,9 @@
+#include "ttgo.hpp"
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <driver/gpio.h>
 #include <stdio.h>
 #include "uix.hpp"
-#include "ttgo.hpp"
 #define OPENSANS_REGULAR_IMPLEMENTATION
 #include "OpenSans_Regular.h"
 #undef OPENSANS_REGULAR_IMPLEMENTATION

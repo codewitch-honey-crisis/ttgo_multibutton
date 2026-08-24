@@ -30,6 +30,7 @@ static inline void uix_fb_writeback(const void* fb, int y1, int y2) {
 }
 #endif
 #ifdef LCD_BUS
+
 uix::display devkit_display;
 
 static void uix_flush(const gfx::rect16& bounds, const void* bmp, void* state) {
@@ -55,7 +56,7 @@ static void uix_flush(const gfx::rect16& bounds, const void* bmp, void* state) {
 #if LCD_TRANSFER_SIZE > 0
     panel_lcd_flush(bounds.x1, bounds.y1, bounds.x2, bounds.y2, (void*)bmp);
 #if LCD_SYNC_TRANSFER == 1
-    devkit_display.flush_complete();    // async case completes via panel_lcd_flush_complete()
+    devkit_display.flush_complete();
 #endif
 #else
 #error "LCD_TRANSFER_SIZE == 0 requires an RGB or MIPI panel"
@@ -66,9 +67,9 @@ static void uix_flush(const gfx::rect16& bounds, const void* bmp, void* state) {
 void panel_lcd_flush_complete() {
     devkit_display.flush_complete();
 }
-
+#endif
 #ifdef TOUCH_BUS
-void uix_touch(point16* out_locations, size_t* in_out_locations_size, void* state) {
+static void uix_touch(point16* out_locations, size_t* in_out_locations_size, void* state) {
     uint16_t x[5];
     uint16_t y[5];
     uint16_t s[5];
@@ -81,7 +82,6 @@ void uix_touch(point16* out_locations, size_t* in_out_locations_size, void* stat
         out_locations[i]=point16(x[i],y[i]);
     }
 }
-#endif
 #endif
 void devkit_init(void) {
 #ifdef POWER
@@ -100,7 +100,9 @@ void devkit_init(void) {
 #ifndef USE_DIRECT_MODE
     devkit_display.buffer_size(LCD_TRANSFER_SIZE);
     devkit_display.buffer1((uint8_t*)panel_lcd_transfer_buffer());
+#if LCD_SYNC_TRANSFER == 0
     devkit_display.buffer2((uint8_t*)panel_lcd_transfer_buffer2());
+#endif
 #else
     devkit_display.update_mode(uix::screen_update_mode::direct);
     devkit_display.buffer_size((LCD_WIDTH*LCD_HEIGHT*LCD_BIT_DEPTH+7)/8);
@@ -109,9 +111,7 @@ void devkit_init(void) {
     devkit_display.buffer2((uint8_t*)panel_lcd_framebuffer(1));
 #endif
 #endif
-#ifdef LCD_BUS    
     devkit_display.on_flush_callback(uix_flush);
-#endif
 #ifdef TOUCH_BUS
     devkit_display.on_touch_callback(uix_touch);
 #endif

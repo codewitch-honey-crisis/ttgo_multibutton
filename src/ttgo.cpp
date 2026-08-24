@@ -38,14 +38,12 @@ __attribute__((weak)) void ttgo_on_battery_enabled_changed(bool enabled) {
 __attribute__((weak)) void ttgo_on_lcd_enabled_changed(bool enabled) {
 
 }
-
 ttgo_screen_t& ttgo_screen(void) {
     return static_cast<ttgo_screen_t&>(devkit_display.active_screen());
 }
 void ttgo_screen(ttgo_screen_t& screen) {
     devkit_display.active_screen(screen);
 }
-
 static void mb_on_pressed_changed(bool pressed, void* state) {
     ttgo_on_pressed_changed((int)state,pressed);
 }
@@ -142,7 +140,6 @@ void ttgo_init(ttgo_options_t options) {
         cfg.on_long_click_callback = nullptr;
     }
     mb_35_handle = multibutton_init_za(&cfg,mb_35_events,&mb_35_data);
-
     ttgo_default_screen.dimensions(TTGO_LCD_DIM);
     devkit_display.active_screen(ttgo_default_screen);
     
