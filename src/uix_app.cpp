@@ -21,7 +21,7 @@ using label_t = label<ttgo_surface_t>;
 // wrap our header data with a stream, since gfx uses those
 static const_buffer_stream text_font_stream(OpenSans_Regular, sizeof(OpenSans_Regular));
 // now create our truetype font with that stream
-static tt_font text_font(text_font_stream, LCD_HEIGHT / 5, font_size_units::px);
+static tt_font text_font(text_font_stream, TTGO_LCD_HEIGHT / 5, font_size_units::px);
 static mask_draw_cache draw_cache;
 painter_t dot0, dot35;
 battery_t batt;
