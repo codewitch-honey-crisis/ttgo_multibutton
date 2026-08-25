@@ -1,14 +1,19 @@
 #pragma once
-#include "devkit.hpp"
+#include "panel.h"
+#ifdef LCD_BUS
+#include "gfx.hpp"
+#include "uix.hpp"
+extern uix::display ttgo_display;
 #define TTGO_LCD_DIM {LCD_WIDTH,LCD_HEIGHT}
 #define TTGO_PIXEL gfx::rgb_pixel<LCD_BIT_DEPTH>
 #define TTGO_PALETTE gfx::palette_none<TTGO_PIXEL>
-#define TTGO_BUTTON_0 0
-#define TTGO_BUTTON_35 35
 using ttgo_screen_t = uix::screen_ex<gfx::bitmap<TTGO_PIXEL,TTGO_PALETTE>,LCD_X_ALIGN,LCD_Y_ALIGN>;
 using ttgo_surface_t = typename ttgo_screen_t::control_surface_type;
 using ttgo_color_t = gfx::color<typename ttgo_screen_t::pixel_type>;
 extern ttgo_screen_t ttgo_default_screen;
+#endif
+#define TTGO_BUTTON_0 0
+#define TTGO_BUTTON_35 35
 typedef enum {
     TTGO_DEFAULT = 0,
     TTGO_BUTTON_0_CLICKS = 1,
@@ -21,19 +26,18 @@ typedef enum {
 } ttgo_options_t;
 void ttgo_init(ttgo_options_t options = TTGO_DEFAULT);
 void ttgo_update(void);
-ttgo_screen_t& ttgo_screen(void);
-void ttgo_screen(ttgo_screen_t& screen);
 void ttgo_on_pressed_changed(uint8_t gpio,bool pressed);
 void ttgo_on_clicks(uint8_t gpio,unsigned clicks);
 void ttgo_on_long_click(uint8_t gpio);
-void ttgo_on_battery_enabled_changed(bool enabled);
 void ttgo_on_lcd_enabled_changed(bool enabled);
 bool ttgo_pressed(uint8_t gpio);
 void ttgo_backlight(uint8_t percent);
 bool ttgo_lcd_enabled(void);
 void ttgo_lcd_enable(bool value);
 void ttgo_lcd_fade_to_sleep(void);
-bool ttgo_battery_enabled(void);
-void ttgo_battery_enable(bool value);
-uint16_t ttgo_battery_voltage(void);
 uint8_t ttgo_battery_level(void);
+void ttgo_power_off(void); // only works when on battery
+#ifdef LCD_BUS
+ttgo_screen_t& ttgo_screen(void);
+void ttgo_screen(ttgo_screen_t& screen);
+#endif
