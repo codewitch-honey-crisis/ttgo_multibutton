@@ -100,7 +100,7 @@ static void loop_task(void* arg) {
     }
 }
 extern "C" void app_main(void) {
-    // initialize the TTGO
+    // initialize the TTGO with multiplexing on all buttons
     ttgo_init(TTGO_BUTTON_ALL);
     
     // preallocate our draw cache (not necessary, but slightly better performance)
@@ -113,6 +113,7 @@ extern "C" void app_main(void) {
 
     text_font.initialize();
 
+    // set up the screen and controls
     ttgo_default_screen.background_color(ttgo_color_t::purple);
 
     // text label control
