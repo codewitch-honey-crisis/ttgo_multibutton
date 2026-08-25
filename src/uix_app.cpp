@@ -144,9 +144,6 @@ extern "C" void app_main(void) {
     batt.visible(false);
     ttgo_default_screen.register_control(batt);
 
-    // commit the display properties to the screen
-    ttgo_display.commit();
-
     // kick the text off
     strcpy(text_data, "start clicking!");
     start_text();
