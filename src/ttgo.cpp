@@ -6,14 +6,16 @@
 #include "ttgo.hpp"
 #include "multibutton.h"
 #include "esp_lcd_panel_io.h"
-
+#ifndef TTGO_BUTTON_EVENTS
+#define TTGO_BUTTON_EVENTS MULTIBUTTON_EVENT_SIZE_DEFAULT
+#endif
 ttgo_screen_t ttgo_default_screen;
 static multibutton_t mb_0_data;
 static multibutton_handle_t mb_0_handle;
-static multibutton_event_t mb_0_events[MULTIBUTTON_EVENT_SIZE_DEFAULT];
+static multibutton_event_t mb_0_events[TTGO_BUTTON_EVENTS];
 static multibutton_t mb_35_data;
 static multibutton_handle_t mb_35_handle;
-static multibutton_event_t mb_35_events[MULTIBUTTON_EVENT_SIZE_DEFAULT];
+static multibutton_event_t mb_35_events[TTGO_BUTTON_EVENTS];
 static bool mb_0_old_pressed = false;
 static bool mb_35_old_pressed = false;
 #ifdef LCD_BUS
@@ -91,7 +93,7 @@ void ttgo_init(ttgo_options_t options) {
     } else {
         cfg.on_long_click_callback = nullptr;
     }
-    cfg.events_size = MULTIBUTTON_EVENT_SIZE_DEFAULT;
+    cfg.events_size = TTGO_BUTTON_EVENTS;
     mb_0_handle = multibutton_init_za(&cfg,mb_0_events,&mb_0_data);
     cfg.double_click = 0;
     cfg.long_click = 0;
