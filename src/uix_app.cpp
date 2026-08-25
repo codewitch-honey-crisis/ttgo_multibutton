@@ -102,7 +102,7 @@ static void loop_task(void* arg) {
 extern "C" void app_main(void) {
     // initialize the TTGO
     ttgo_init(TTGO_BUTTON_ALL);
-    ttgo_display.update_strategy(screen_update_strategy::minimize_paints);
+    
     // preallocate our draw cache (not necessary, but slightly better performance)
     draw_cache.ensure(ttgo_default_screen.dimensions().width);
     // set up our font caches for faster rendering
