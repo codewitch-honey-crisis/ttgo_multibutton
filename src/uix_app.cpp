@@ -1,21 +1,27 @@
-#include "ttgo.hpp"
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
-#include <driver/gpio.h>
 #include <stdio.h>
-#include "uix.hpp"
+#include "ttgo.hpp"
+// truetype font embedded in a header:
 #define OPENSANS_REGULAR_IMPLEMENTATION
 #include "OpenSans_Regular.h"
 #undef OPENSANS_REGULAR_IMPLEMENTATION
+// import the gfx and uix namespaces since we'll be using them all over
 using namespace gfx;
 using namespace uix;
+// UIX uses RGBA8888 so create a color enum for that:
 using uix_color_t = color<uix_pixel>;
+// the painter type for the button indicators:
 using painter_t = painter<ttgo_surface_t>;
+// the battery indicator type:
 using battery_t = battery<ttgo_surface_t>;
+// the text label type:
 using label_t = label<ttgo_surface_t>;
+// wrap our header data with a stream, since gfx uses those
 static const_buffer_stream text_font_stream(OpenSans_Regular,sizeof(OpenSans_Regular));
+// now create our truetype font with that stream
 static tt_font text_font(text_font_stream,LCD_HEIGHT/5,font_size_units::px);
-static mask_draw_cache dot_cache;
+static mask_draw_cache draw_cache;
 painter_t dot0,dot35;
 battery_t batt;
 static TickType_t text_fade_ts = 0;
@@ -34,7 +40,7 @@ static void start_text() {
 void dot_on_paint(ttgo_surface_t& destination, const srect16& clip, void* state) {
     uint8_t gpio = (int)state;
     if(!ttgo_pressed(gpio)) return;
-    draw::aa_filled_rounded_rectangle(destination,destination.dimensions().bounds(),ttgo_color_t::white,20,&dot_cache);
+    draw::aa_filled_rounded_rectangle(destination,destination.dimensions().bounds(),ttgo_color_t::white,20,&draw_cache);
 }
 void ttgo_on_pressed_changed(uint8_t gpio,bool pressed) {
     ttgo_lcd_enable(true);
@@ -93,41 +99,58 @@ static void loop_task(void* arg) {
     }
 }
 extern "C" void app_main(void) {
+    // initialize the TTGO
     ttgo_init(TTGO_BUTTON_ALL);
-    ttgo_default_screen.background_color(ttgo_color_t::purple);
-    
+    ttgo_display.update_strategy(screen_update_strategy::minimize_paints);
+    // preallocate our draw cache (not necessary, but slightly better performance)
+    draw_cache.ensure(ttgo_default_screen.dimensions().width);
+    // set up our font caches for faster rendering
     text_measure_cache.max_entries(40);
     text_measure_cache.initialize();
     text_draw_cache.max_entries(30);
     text_draw_cache.initialize();
     
     text_font.initialize();
-    text.bounds(srect16(0,0,ttgo_default_screen.bounds().x2,text_font.line_height()+1).center_vertical(ttgo_default_screen.bounds()));
-    const int16_t dot_size = text.bounds().y1/2;
-    dot_cache.ensure(dot_size);
-    
-    dot0.bounds(srect16(0,0,dot_size*1.5-1,dot_size-1));
-    dot0.on_paint_callback(dot_on_paint,(void*)0);
-    ttgo_default_screen.register_control(dot0);
-    
-    dot35.bounds(srect16(0,0,dot_size*1.5-1,dot_size-1).offset(0,ttgo_default_screen.dimensions().height-dot_size));
-    dot35.on_paint_callback(dot_on_paint,(void*)35);
-    ttgo_default_screen.register_control(dot35);
-    
-    batt.bounds(srect16(0,0,dot_size*2-1,dot_size-1).offset(ttgo_default_screen.dimensions().width-(dot_size*2),0));
-    batt.color(uix_color_t::white);
-    batt.inner_color(uix_color_t::green);
-    batt.visible(false);
-    ttgo_default_screen.register_control(batt);
 
+    ttgo_default_screen.background_color(ttgo_color_t::purple);
+    
+    // text label control
+    text.bounds(srect16(0,0,ttgo_default_screen.bounds().x2,text_font.line_height()+1).center_vertical(ttgo_default_screen.bounds()));
     text.font(text_font);
     text.measure_cache(text_measure_cache);
     text.draw_cache(text_draw_cache);
     text.color(uix_color_t::white);
     text.text_justify(uix::uix_justify::bottom_middle);
     ttgo_default_screen.register_control(text);
+    
+    const int16_t dot_size = text.bounds().y1/2;
+
+    // dot 0 control
+    dot0.bounds(srect16(0,0,dot_size*1.5-1,dot_size-1));
+    dot0.on_paint_callback(dot_on_paint,(void*)0);
+    ttgo_default_screen.register_control(dot0);
+    
+    // dot 35 control
+    dot35.bounds(srect16(0,0,dot_size*1.5-1,dot_size-1).offset(0,ttgo_default_screen.dimensions().height-dot_size));
+    dot35.on_paint_callback(dot_on_paint,(void*)35);
+    ttgo_default_screen.register_control(dot35);
+    
+    // battery control
+    batt.bounds(srect16(0,0,dot_size*2-1,dot_size-1).offset(ttgo_default_screen.dimensions().width-(dot_size*2),0));
+    batt.color(uix_color_t::white);
+    batt.inner_color(uix_color_t::green);
+    batt.draw_cache(draw_cache);
+    batt.visible(false);
+    ttgo_default_screen.register_control(batt);
+
+    // commit the display properties to the screen
+    ttgo_display.commit();
+
+    // kick the text off
     strcpy(text_data,"start clicking!");
     start_text();
+    
+    // start the app loop
     TaskHandle_t loop_handle;
     xTaskCreate(loop_task,"loop_task",4096,nullptr,uxTaskPriorityGet(xTaskGetCurrentTaskHandle()),&loop_handle);
 }

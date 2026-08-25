@@ -1,6 +1,5 @@
 #pragma once
 #include "panel.h"
-#ifdef LCD_BUS
 #include "gfx.hpp"
 #include "uix.hpp"
 extern uix::display ttgo_display;
@@ -11,7 +10,7 @@ using ttgo_screen_t = uix::screen_ex<gfx::bitmap<TTGO_PIXEL,TTGO_PALETTE>,LCD_X_
 using ttgo_surface_t = typename ttgo_screen_t::control_surface_type;
 using ttgo_color_t = gfx::color<typename ttgo_screen_t::pixel_type>;
 extern ttgo_screen_t ttgo_default_screen;
-#endif
+
 #define TTGO_BUTTON_0 0
 #define TTGO_BUTTON_35 35
 typedef enum {
@@ -37,7 +36,3 @@ void ttgo_lcd_enable(bool value);
 void ttgo_lcd_fade_to_sleep(void);
 uint8_t ttgo_battery_level(void);
 void ttgo_power_off(void); // only works when on battery
-#ifdef LCD_BUS
-ttgo_screen_t& ttgo_screen(void);
-void ttgo_screen(ttgo_screen_t& screen);
-#endif

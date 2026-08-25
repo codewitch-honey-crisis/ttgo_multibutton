@@ -40,12 +40,7 @@ __attribute__((weak)) void ttgo_on_long_click(uint8_t gpio) {
 __attribute__((weak)) void ttgo_on_lcd_enabled_changed(bool enabled) {
 
 }
-ttgo_screen_t& ttgo_screen(void) {
-    return static_cast<ttgo_screen_t&>(ttgo_display.active_screen());
-}
-void ttgo_screen(ttgo_screen_t& screen) {
-    ttgo_display.active_screen(screen);
-}
+
 static void mb_on_pressed_changed(bool pressed, void* state) {
     ttgo_on_pressed_changed((int)state,pressed);
 }
