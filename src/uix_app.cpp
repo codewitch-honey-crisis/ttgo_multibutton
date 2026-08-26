@@ -7,9 +7,7 @@
 // https://github.com/edx/edx-fonts/blob/master/open-sans/fonts/Regular/OpenSans-Regular.ttf
 // Converted with:
 // https://codewitch-honey-crisis.github.io/gfx_web/header/index.html
-#define OPENSANS_REGULAR_IMPLEMENTATION
 #include "OpenSans_Regular.hpp"
-#undef OPENSANS_REGULAR_IMPLEMENTATION
 // import the gfx and uix namespaces since we'll be using them all over
 using namespace gfx;
 using namespace uix;
