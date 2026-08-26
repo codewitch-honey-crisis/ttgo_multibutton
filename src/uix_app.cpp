@@ -129,7 +129,7 @@ extern "C" void app_main(void) {
     text.measure_cache(text_measure_cache);
     text.draw_cache(text_draw_cache);
     text.color(uix_color_t::white);
-    text.text_justify(uix::uix_justify::bottom_middle);
+    text.text_justify(uix_justify::bottom_middle);
     ttgo_default_screen.register_control(text);
 
     const int16_t dot_size = text.bounds().y1 / 2;
