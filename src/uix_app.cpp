@@ -76,10 +76,12 @@ static void loop_task(void* arg) {
     TickType_t wdt_ts = xTaskGetTickCount();
     int old_batt_level = -1;
     while (1) {
+        // feed the watchdog timer
         if (xTaskGetTickCount() >= wdt_ts + pdMS_TO_TICKS(200)) {
             wdt_ts = xTaskGetTickCount();
             vTaskDelay(5);
         }
+        // update the battery display
         uint8_t batt_level = ttgo_battery_level();
         if (batt_level != old_batt_level) {
             old_batt_level = batt_level;
@@ -88,24 +90,29 @@ static void loop_task(void* arg) {
         if (text_fade_ts != 0) {
             if (xTaskGetTickCount() >= text_fade_ts + pdMS_TO_TICKS(10)) {
                 text_fade_ts = xTaskGetTickCount();
+                // fade the text
                 text_opacity -= 2;
+                // if it's done fading:
                 if (text_opacity <= 1) {
+                    // reset the text and fade
                     text.visible(false);
                     text_fade_ts = 0;
                     text_opacity = 255;
+                    // sleep the display
                     ttgo_lcd_fade_to_sleep();
                 } else {
                     text.color(uix_color_t::white.opacity8(text_opacity));
                 }
             }
         }
+        // must be called in app loop
         ttgo_update();
     }
 }
 extern "C" void app_main(void) {
     // initialize the TTGO with multiplexing on all buttons
     ttgo_init(TTGO_BUTTON_ALL);
-    
+    printf("Battery voltage: %dmV\n",ttgo_battery_voltage());
     // preallocate our draw cache (not necessary, but slightly better performance)
     draw_cache.ensure(ttgo_default_screen.dimensions().width);
     // set up our font caches for faster rendering
