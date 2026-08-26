@@ -1,11 +1,14 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <stdio.h>
-
 #include "ttgo.hpp"
 // truetype font embedded in a header:
+// Downloaded from:
+// https://github.com/edx/edx-fonts/blob/master/open-sans/fonts/Regular/OpenSans-Regular.ttf
+// Converted with:
+// https://codewitch-honey-crisis.github.io/gfx_web/header/index.html
 #define OPENSANS_REGULAR_IMPLEMENTATION
-#include "OpenSans_Regular.h"
+#include "OpenSans_Regular.hpp"
 #undef OPENSANS_REGULAR_IMPLEMENTATION
 // import the gfx and uix namespaces since we'll be using them all over
 using namespace gfx;
@@ -19,7 +22,7 @@ using battery_t = battery<ttgo_surface_t>;
 // the text label type:
 using label_t = label<ttgo_surface_t>;
 // wrap our header data with a stream, since gfx uses those
-static const_buffer_stream text_font_stream(OpenSans_Regular, sizeof(OpenSans_Regular));
+static const_buffer_stream& text_font_stream = OpenSans_Regular;
 // now create our truetype font with that stream
 static tt_font text_font(text_font_stream, TTGO_LCD_HEIGHT / 5, font_size_units::px);
 static mask_draw_cache draw_cache;
