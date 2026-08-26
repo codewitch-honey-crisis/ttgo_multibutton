@@ -42,8 +42,7 @@ static void start_text() {
     text_fade_ts = xTaskGetTickCount();
 }
 void dot_on_paint(ttgo_surface_t& destination, const srect16& clip, void* state) {
-    uint8_t gpio = (int)state;
-    if (!ttgo_pressed(gpio)) return;
+    // uint8_t gpio = (int)state; // don't need this right now
     draw::aa_filled_rounded_rectangle(destination, destination.dimensions().bounds(), ttgo_color_t::white, 20, &draw_cache);
 }
 void ttgo_on_pressed_changed(uint8_t gpio, bool pressed) {
@@ -54,9 +53,9 @@ void ttgo_on_pressed_changed(uint8_t gpio, bool pressed) {
         text.invalidate();
     }
     if (gpio == TTGO_BUTTON_0) {
-        dot0.invalidate();
+        dot0.visible(pressed);
     } else {
-        dot35.invalidate();
+        dot35.visible(pressed);
     }
 }
 void ttgo_on_clicks(uint8_t gpio, unsigned clicks) {
@@ -140,11 +139,13 @@ extern "C" void app_main(void) {
     // dot 0 control
     dot0.bounds(srect16(0, 0, dot_size * 1.5 - 1, dot_size - 1));
     dot0.on_paint_callback(dot_on_paint, (void*)0);
+    dot0.visible(false);
     ttgo_default_screen.register_control(dot0);
 
     // dot 35 control
     dot35.bounds(srect16(0, 0, dot_size * 1.5 - 1, dot_size - 1).offset(0, ttgo_default_screen.dimensions().height - dot_size));
     dot35.on_paint_callback(dot_on_paint, (void*)35);
+    dot35.visible(false);
     ttgo_default_screen.register_control(dot35);
 
     // battery control
