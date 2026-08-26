@@ -21,7 +21,7 @@ using painter_t = painter<ttgo_surface_t>;
 using battery_t = battery<ttgo_surface_t>;
 // the text label type:
 using label_t = label<ttgo_surface_t>;
-// wrap our header data with a stream, since gfx uses those
+// reference the font stream for later use
 static const_buffer_stream& text_font_stream = OpenSans_Regular;
 // now create our truetype font with that stream
 static tt_font text_font(text_font_stream, TTGO_LCD_HEIGHT / 5, font_size_units::px);
