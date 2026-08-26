@@ -12,7 +12,7 @@
 #ifndef OPENSANS_REGULAR_HPP
 #define OPENSANS_REGULAR_HPP
 #include <stdint.h>
-#include "gfx_positioning.hpp"
+#include "gfx_core.hpp"
 
 /// @brief A TrueType vector font
 extern gfx::const_buffer_stream OpenSans_Regular;
