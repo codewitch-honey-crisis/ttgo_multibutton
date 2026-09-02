@@ -102,6 +102,7 @@ static void loop_task(void* arg) {
 extern "C" void app_main(void) {
     // initialize the TTGO with multiplexing on all buttons
     ttgo_init(TTGO_BUTTON_ALL);
+    ttgo_lcd_rotation(2);
     printf("Battery voltage: %dmV\n",ttgo_battery_voltage());
     // preallocate our draw cache (not necessary, but slightly better performance)
     draw_cache.ensure(ttgo_default_screen.dimensions().width);
